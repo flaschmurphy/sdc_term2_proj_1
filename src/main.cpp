@@ -21,7 +21,6 @@ std::string hasData(std::string s)
         return "";
     }
     else if (b1 != std::string::npos && b2 != std::string::npos) {
-        cout << s.substr(b1, b2 - b1 + 1) << endl;
         return s.substr(b1, b2 - b1 + 1);
     }
     return "";
@@ -54,7 +53,6 @@ int main()
                  
                  if (event == "telemetry") {
                        // j[1] is the data JSON object
-                       
                        string sensor_measurment = j[1]["sensor_measurement"];
                        
                        MeasurementPackage meas_package;
@@ -75,6 +73,9 @@ int main()
                             meas_package.raw_measurements_ << px, py;
                             iss >> timestamp;
                             meas_package.timestamp_ = timestamp;
+
+                            cout << px << " " << py << " ";
+
                        } else if (sensor_type.compare("R") == 0) {
                             meas_package.sensor_type_ = MeasurementPackage::RADAR;
                             meas_package.raw_measurements_ = VectorXd(3);
@@ -96,6 +97,9 @@ int main()
                        iss >> y_gt;
                        iss >> vx_gt;
                        iss >> vy_gt;
+
+                       cout << x_gt << " " << y_gt << " ";
+
                        VectorXd gt_values(4);
                        gt_values(0) = x_gt;
                        gt_values(1) = y_gt; 
@@ -140,6 +144,7 @@ int main()
             }
         }
     });
+
 
     // We don't need this since we're not using HTTP but if it's removed the program doesn't compile :-(
     h.onHttpRequest([](uWS::HttpResponse *res, uWS::HttpRequest req, char *data, size_t, size_t) {
