@@ -70,23 +70,31 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     float vy = x_(3);
   
     float rho = sqrt(px_*px_ + py_*py_);
-    float theta = atan2(py_, px_);
+    float phi = atan2(py_, px_);
     float rho_dot = (px_ * vx + py_* vy)/rho;
 
-    long x_size = x_.size();
-    MatrixXd I = MatrixXd::Identity(x_size, x_size);
+    if (fabs(rho) < 0.0001) {
+        rho_dot = 0;
+    } else {
+        rho_dot = (x_(0)*x_(2) + x_(1)*x_(3))/rho;
+    }
 
-    VectorXd z_pred = VectorXd(3);
-    z_pred << rho, theta, rho_dot;
+    VectorXd z_pred(3);
+    z_pred << rho, phi, rho_dot;
     VectorXd y = z - z_pred;
+    y[1] = atan2(sin(y[1]), cos(y[1])); // Normalizaton of phi to stay between -PI and +PI
   
     // Lesson 5, Section 7
     MatrixXd Ht = H_.transpose();
     MatrixXd S = H_ * P_ * Ht + R_;
     MatrixXd Si = S.inverse();
-    MatrixXd K =  P_ * Ht * Si;
+    MatrixXd PHt = P_ * Ht;
+    MatrixXd K =  PHt * Si;
     
     //new state
+    long x_size = x_.size();
+    MatrixXd I = MatrixXd::Identity(x_size, x_size);
+
     x_ = x_ + (K * y);
     P_ = (I - K * H_) * P_;
 }
