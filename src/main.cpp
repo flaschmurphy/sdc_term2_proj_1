@@ -74,8 +74,6 @@ int main()
                             iss >> timestamp;
                             meas_package.timestamp_ = timestamp;
 
-                            cout << px << " " << py << " ";
-
                        } else if (sensor_type.compare("R") == 0) {
                             meas_package.sensor_type_ = MeasurementPackage::RADAR;
                             meas_package.raw_measurements_ = VectorXd(3);
@@ -97,8 +95,6 @@ int main()
                        iss >> y_gt;
                        iss >> vx_gt;
                        iss >> vy_gt;
-
-                       cout << x_gt << " " << y_gt << " ";
 
                        VectorXd gt_values(4);
                        gt_values(0) = x_gt;
@@ -135,7 +131,6 @@ int main()
                        msgJson["rmse_vx"] = RMSE(2);
                        msgJson["rmse_vy"] = RMSE(3);
                        auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
-                       // std::cout << msg << std::endl;
                        ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
                  }
             } else {
